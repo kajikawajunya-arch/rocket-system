@@ -11,7 +11,7 @@ import {
   Loader2
 } from 'lucide-react';
 
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwXK7MtARstXgEAGYlEuE8WiMsI6-6bSNB9lk3X3s1PJieLDflLmUUiBXrPJHjqhPjjfA/exec';
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzZyvoVzkK_PsVQCPMolCZV6q53jHVg-C-MKT9rf4XjPdK8hfFHZ87h0JG4NP8nthWqXw/exec';
 
 type KomaFilter = 'ALL' | 'A' | 'B' | 'AB';
 
