@@ -98,6 +98,7 @@ function App() {
       // 報告済みかどうかの判定：配達件数に何らかの数値・値が入っていれば報告済みとする
       // ※GAS側で未報告の場合、空文字になっていることを想定
       const hasReported = row['配達件数'] !== '' && row['配達件数'] !== undefined && row['配達件数'] !== null;
+      const errorDetail = row['エラー詳細'] || '';
       
       return {
         id: index.toString(),
@@ -105,6 +106,7 @@ function App() {
         koma: row['コマ数'] || '不明',
         codeName: row['コード名'] || '名称不明',
         isReported: hasReported,
+        errorDetail: errorDetail,
         reportDetails: hasReported ? {
           workerName: row['稼働者(申告)'] || row['稼働者'] || row['コード名'], // 新旧どちらのカラム名にも対応
           deliveries: row['配達件数']
@@ -268,7 +270,7 @@ function App() {
                             </>
                           ) : (
                             <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--status-unreported-text)', fontSize: '0.8rem', marginTop: '4px' }}>
-                              <AlertCircle size={12} /> ※配達件数がまだ報告されていません
+                              <AlertCircle size={12} /> {driver.errorDetail ? `※${driver.errorDetail}` : '※配達件数がまだ報告されていません'}
                             </span>
                           )}
                         </div>
