@@ -17,6 +17,7 @@ type KomaFilter = 'ALL' | 'A' | 'B' | 'AB';
 
 function App() {
   const [komaFilter, setKomaFilter] = useState<KomaFilter>('ALL');
+  const [showOnlyUnreported, setShowOnlyUnreported] = useState(false);
   
   // 今日の日付を初期値にセット (YYYY-MM-DD形式)
   const today = new Date();
@@ -114,9 +115,20 @@ function App() {
 
   // フィルター適用後のデータ
   const filteredData = useMemo(() => {
-    if (komaFilter === 'ALL') return processedData;
-    return processedData.filter(d => d.koma === komaFilter);
-  }, [processedData, komaFilter]);
+    let result = processedData;
+    
+    // コマ数フィルター
+    if (komaFilter !== 'ALL') {
+      result = result.filter(d => d.koma === komaFilter);
+    }
+    
+    // 未報告フィルター
+    if (showOnlyUnreported) {
+      result = result.filter(d => !d.isReported);
+    }
+    
+    return result;
+  }, [processedData, komaFilter, showOnlyUnreported]);
 
   // サマリー計算
   const totalCount = filteredData.length;
@@ -202,7 +214,20 @@ function App() {
                   AB通し
                 </button>
               </div>
-              <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+              
+              <div style={{ marginLeft: '1rem', display: 'flex', alignItems: 'center' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', fontSize: '0.85rem', color: 'var(--text-primary)', background: 'rgba(255,255,255,0.05)', padding: '0.4rem 0.8rem', borderRadius: '8px', border: '1px solid var(--card-border)' }}>
+                  <input 
+                    type="checkbox" 
+                    checked={showOnlyUnreported}
+                    onChange={(e) => setShowOnlyUnreported(e.target.checked)}
+                    style={{ accentColor: 'var(--status-unreported)' }}
+                  />
+                  未報告のみ表示
+                </label>
+              </div>
+
+              <div style={{ marginLeft: 'auto', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
                 {filteredData.length} 件を表示中
               </div>
             </div>
