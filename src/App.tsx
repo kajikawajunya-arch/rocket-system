@@ -100,7 +100,7 @@ function App() {
       
       return {
         id: index.toString(),
-        date: row['日付'],
+        date: targetDayStr, // 表示用に整形された日付を使用
         koma: row['コマ数'] || '不明',
         codeName: row['コード名'] || '名称不明',
         isReported: hasReported,
@@ -226,6 +226,9 @@ function App() {
                         </div>
                         
                         <div className="driver-meta">
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--text-secondary)' }}>
+                            <Calendar size={14} /> {driver.date}
+                          </span>
                           <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <Clock size={14} /> {driver.koma}コマ
                           </span>
