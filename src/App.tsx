@@ -257,7 +257,7 @@ function App() {
                           <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <Clock size={14} /> {driver.koma}コマ
                           </span>
-                          {driver.isReported && driver.reportDetails && (
+                          {driver.isReported && driver.reportDetails ? (
                             <>
                               <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--text-primary)' }}>
                                 <Truck size={14} /> 稼働者: {driver.reportDetails.workerName}
@@ -266,6 +266,10 @@ function App() {
                                 <Package size={14} /> {driver.reportDetails.deliveries}件
                               </span>
                             </>
+                          ) : (
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--status-unreported-text)', fontSize: '0.8rem', marginTop: '4px' }}>
+                              <AlertCircle size={12} /> ※配達件数がまだ報告されていません
+                            </span>
                           )}
                         </div>
                       </div>
