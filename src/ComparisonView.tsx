@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { ArrowLeft, Upload, FileSpreadsheet, CheckCircle2, AlertTriangle, Info, Calendar, Link as LinkIcon, Trash2 } from 'lucide-react';
+import { ArrowLeft, Upload, CheckCircle2, AlertTriangle, Info, Calendar, Link as LinkIcon, Trash2 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
 // --- Types ---
