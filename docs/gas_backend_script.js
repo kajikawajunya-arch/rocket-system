@@ -170,6 +170,8 @@ function extractDataNew(text) {
   let formatErrorMsg = '';
   if (!deliveryCountMatch) {
     formatErrorMsg = 'フォーマットエラー: 配達件数が読み取れません';
+  } else if (!isVerified) {
+    formatErrorMsg = '未確認エラー: メールリストに名前がありません';
   }
 
   const data = [

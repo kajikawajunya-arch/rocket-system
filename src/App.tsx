@@ -11,11 +11,15 @@ import {
   Loader2
 } from 'lucide-react';
 
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzZyvoVzkK_PsVQCPMolCZV6q53jHVg-C-MKT9rf4XjPdK8hfFHZ87h0JG4NP8nthWqXw/exec';
+import { ComparisonView } from './ComparisonView';
+
+// GAS WebアプリのURL（新しくデプロイされたもの）
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwAMsW-5Jir6SkJ6VykJvxt2KKO6PP6S3mqNAv1JBl8K9v6leDWYNebcj26mcASmZOKqw/exec';
 
 type KomaFilter = 'ALL' | 'A' | 'B' | 'AB';
 
 function App() {
+  const [currentView, setCurrentView] = useState<'dashboard' | 'comparison'>('dashboard');
   const [komaFilter, setKomaFilter] = useState<KomaFilter>('ALL');
   const [showOnlyUnreported, setShowOnlyUnreported] = useState(false);
   
@@ -95,10 +99,10 @@ function App() {
     });
 
     return daysData.map((row, index) => {
-      // 報告済みかどうかの判定：配達件数に何らかの数値・値が入っていれば報告済みとする
       // ※GAS側で未報告の場合、空文字になっていることを想定
-      const hasReported = row['配達件数'] !== '' && row['配達件数'] !== undefined && row['配達件数'] !== null;
       const errorDetail = row['エラー詳細'] || '';
+      // 報告済みかどうかの判定：配達件数が入っており、かつエラー詳細が空であること
+      const hasReported = (row['配達件数'] !== '' && row['配達件数'] !== undefined && row['配達件数'] !== null) && !errorDetail;
       
       return {
         id: index.toString(),
@@ -137,6 +141,13 @@ function App() {
   const reportedCount = filteredData.filter(d => d.isReported).length;
   const unreportedCount = totalCount - reportedCount;
 
+  // 照合画面が選択されている場合は ComparisonView をレンダリング
+  if (currentView === 'comparison') {
+    return (
+      <ComparisonView onBack={() => setCurrentView('dashboard')} />
+    );
+  }
+
   return (
     <div className="app-container">
       {/* Header */}
@@ -158,9 +169,9 @@ function App() {
               style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', outline: 'none', fontFamily: 'inherit', fontSize: '0.9rem', paddingLeft: '1.8rem', cursor: 'pointer', width: '130px' }}
             />
           </div>
-          <button className="action-btn" onClick={() => alert('後ほど、設定画面（ファイルのアップロード画面等）が開くようになります！')}>
+          <button className="action-btn" onClick={() => setCurrentView('comparison')}>
             <Filter size={18} />
-            設定
+            予実突合
           </button>
         </div>
       </header>
