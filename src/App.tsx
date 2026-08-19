@@ -9,7 +9,9 @@ import {
   Filter,
   Calendar,
   Loader2,
-  ExternalLink
+  ExternalLink,
+  Mail,
+  X
 } from 'lucide-react';
 
 import { ComparisonView } from './ComparisonView';
@@ -31,6 +33,8 @@ function App() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [fetchedData, setFetchedData] = useState<any[]>([]);
+  const [mailList, setMailList] = useState<{a: string[], b: string[]}>({ a: [], b: [] });
+  const [isMailPanelOpen, setIsMailPanelOpen] = useState(false);
 
   // 日付が変更されたら、該当月のデータをAPIから取得する
   useEffect(() => {
@@ -39,9 +43,10 @@ function App() {
       try {
         const dateObj = new Date(selectedDate);
         const targetMonthStr = `${dateObj.getFullYear()}年${dateObj.getMonth() + 1}月`;
+        const targetDayStr = dateObj.getDate().toString();
         
         // GASはリダイレクトを返すので redirect: 'follow' を明示
-        const response = await fetch(`${GAS_API_URL}?month=${encodeURIComponent(targetMonthStr)}`, {
+        const response = await fetch(`${GAS_API_URL}?month=${encodeURIComponent(targetMonthStr)}&day=${encodeURIComponent(targetDayStr)}`, {
           method: 'GET',
           redirect: 'follow'
         });
@@ -52,11 +57,18 @@ function App() {
         } else {
           setFetchedData([]);
         }
+
+        if (json.mailList) {
+          setMailList(json.mailList);
+        } else {
+          setMailList({ a: [], b: [] });
+        }
       } catch (error) {
         console.error("データの取得に失敗しました", error);
         // エラー時はアラートで知らせる
         alert("データの取得に失敗しました。URLや権限を確認してください。");
         setFetchedData([]);
+        setMailList({ a: [], b: [] });
       } finally {
         setIsLoading(false);
       }
@@ -170,6 +182,14 @@ function App() {
               style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', outline: 'none', fontFamily: 'inherit', fontSize: '0.9rem', paddingLeft: '1.8rem', cursor: 'pointer', width: '130px' }}
             />
           </div>
+          <button 
+            className="action-btn" 
+            style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
+            onClick={() => setIsMailPanelOpen(true)}
+          >
+            <Mail size={18} />
+            メール氏名一覧
+          </button>
           <button 
             className="action-btn" 
             style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
@@ -333,6 +353,68 @@ function App() {
           </div>
         </div>
       </main>
+
+      {/* メール氏名一覧パネル (オーバーレイ) */}
+      {isMailPanelOpen && (
+        <div 
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 999 }}
+          onClick={() => setIsMailPanelOpen(false)}
+        >
+          <div 
+            style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: '350px', background: 'var(--card-bg)', borderLeft: '1px solid var(--card-border)', padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ fontSize: '1.2rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Mail size={20} /> メール氏名一覧
+              </h2>
+              <button onClick={() => setIsMailPanelOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+                <X size={24} />
+              </button>
+            </div>
+            
+            {/* Aコマリスト */}
+            <h3 style={{ fontSize: '1rem', color: 'var(--status-reported-text)', borderBottom: '1px solid var(--card-border)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>
+              Aコマ稼働予定 ({mailList.a.length}名)
+            </h3>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginBottom: '2rem' }}>
+              {mailList.a.map((name, i) => {
+                const isReported = processedData.some(d => 
+                  (d.koma === 'A' || d.koma === 'AB') && 
+                  (d.codeName === name || d.reportDetails?.workerName === name)
+                );
+                return (
+                  <li key={i} style={{ padding: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', color: isReported ? 'var(--text-secondary)' : 'var(--status-unreported-text)', textDecoration: isReported ? 'line-through' : 'none', display: 'flex', justifyContent: 'space-between' }}>
+                    <span>{name}</span>
+                    {isReported ? <span style={{fontSize: '0.8rem'}}>報告済</span> : <span style={{fontSize: '0.8rem', fontWeight: 'bold'}}>未報告</span>}
+                  </li>
+                );
+              })}
+              {mailList.a.length === 0 && <li style={{color: 'var(--text-secondary)'}}>データなし</li>}
+            </ul>
+
+            {/* Bコマリスト */}
+            <h3 style={{ fontSize: '1rem', color: 'var(--status-reported-text)', borderBottom: '1px solid var(--card-border)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>
+              Bコマ稼働予定 ({mailList.b.length}名)
+            </h3>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+              {mailList.b.map((name, i) => {
+                const isReported = processedData.some(d => 
+                  (d.koma === 'B' || d.koma === 'AB') && 
+                  (d.codeName === name || d.reportDetails?.workerName === name)
+                );
+                return (
+                  <li key={i} style={{ padding: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', color: isReported ? 'var(--text-secondary)' : 'var(--status-unreported-text)', textDecoration: isReported ? 'line-through' : 'none', display: 'flex', justifyContent: 'space-between' }}>
+                    <span>{name}</span>
+                    {isReported ? <span style={{fontSize: '0.8rem'}}>報告済</span> : <span style={{fontSize: '0.8rem', fontWeight: 'bold'}}>未報告</span>}
+                  </li>
+                );
+              })}
+              {mailList.b.length === 0 && <li style={{color: 'var(--text-secondary)'}}>データなし</li>}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
