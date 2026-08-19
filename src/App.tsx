@@ -8,7 +8,8 @@ import {
   Truck,
   Filter,
   Calendar,
-  Loader2
+  Loader2,
+  ExternalLink
 } from 'lucide-react';
 
 import { ComparisonView } from './ComparisonView';
@@ -169,6 +170,14 @@ function App() {
               style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', outline: 'none', fontFamily: 'inherit', fontSize: '0.9rem', paddingLeft: '1.8rem', cursor: 'pointer', width: '130px' }}
             />
           </div>
+          <button 
+            className="action-btn" 
+            style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
+            onClick={() => window.open('https://docs.google.com/spreadsheets/d/1j0w86gZU_sCvVVcQVQ8R6rzDRaBieTfCnZqPkboREN0/edit', '_blank')}
+          >
+            <ExternalLink size={18} />
+            シートを開く
+          </button>
           <button className="action-btn" onClick={() => setCurrentView('comparison')}>
             <Filter size={18} />
             予実突合
