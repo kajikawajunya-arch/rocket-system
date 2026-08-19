@@ -185,14 +185,6 @@ function App() {
           <button 
             className="action-btn" 
             style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
-            onClick={() => setIsMailPanelOpen(true)}
-          >
-            <Mail size={18} />
-            メール氏名一覧
-          </button>
-          <button 
-            className="action-btn" 
-            style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
             onClick={() => window.open('https://docs.google.com/spreadsheets/d/1j0w86gZU_sCvVVcQVQ8R6rzDRaBieTfCnZqPkboREN0/edit', '_blank')}
           >
             <ExternalLink size={18} />
@@ -254,6 +246,14 @@ function App() {
                   onClick={() => setKomaFilter('AB')}
                 >
                   AB通し
+                </button>
+                <div style={{ width: '1px', height: '20px', background: 'var(--card-border)', margin: '0 0.5rem' }}></div>
+                <button 
+                  className="filter-btn" 
+                  style={{ background: 'var(--primary-color)', borderColor: 'var(--primary-color)', color: 'white', display: 'flex', alignItems: 'center', gap: '6px' }}
+                  onClick={() => setIsMailPanelOpen(true)}
+                >
+                  <Mail size={14} /> メール氏名一覧
                 </button>
               </div>
               
