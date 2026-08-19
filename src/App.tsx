@@ -99,8 +99,8 @@ function App() {
     });
 
     return daysData.map((row, index) => {
-      // ※GAS側で未報告の場合、空文字になっていることを想定
-      const errorDetail = row['エラー詳細'] || '';
+      // ※GAS側で未報告の場合、空文字になっていることを想定。右端の未確認列にエラーがある場合も拾う
+      const errorDetail = row['エラー詳細'] || row['未確認ドライバー'] || '';
       // 報告済みかどうかの判定：配達件数が入っており、かつエラー詳細が空であること
       const hasReported = (row['配達件数'] !== '' && row['配達件数'] !== undefined && row['配達件数'] !== null) && !errorDetail;
       
