@@ -111,10 +111,10 @@ function App() {
         codeName: row['コード名'] || '名称不明',
         isReported: hasReported,
         errorDetail: errorDetail,
-        reportDetails: hasReported ? {
-          workerName: row['稼働者(申告)'] || row['稼働者'] || row['コード名'], // 新旧どちらのカラム名にも対応
+        reportDetails: {
+          workerName: row['稼働者(申告)'] || row['稼働者'] || row['コード名'] || '不明',
           deliveries: row['配達件数']
-        } : null
+        }
       };
     });
   }, [fetchedData, selectedDate]);
@@ -270,18 +270,22 @@ function App() {
                           <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <Clock size={14} /> {driver.koma}コマ
                           </span>
-                          {driver.isReported && driver.reportDetails ? (
+                          {driver.reportDetails && (
                             <>
                               <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--text-primary)' }}>
                                 <Truck size={14} /> 稼働者: {driver.reportDetails.workerName}
                               </span>
-                              <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--status-reported-text)' }}>
-                                <Package size={14} /> {driver.reportDetails.deliveries}件
+                              <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: driver.isReported ? 'var(--status-reported-text)' : 'var(--text-secondary)' }}>
+                                <Package size={14} /> {driver.reportDetails.deliveries ? `${driver.reportDetails.deliveries}件` : '未報告'}
                               </span>
                             </>
-                          ) : (
-                            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--status-unreported-text)', fontSize: '0.8rem', marginTop: '4px' }}>
-                              <AlertCircle size={12} /> {driver.errorDetail ? `※${driver.errorDetail}` : '※配達件数がまだ報告されていません'}
+                          )}
+                          {!driver.isReported && (
+                            <span style={{ display: 'flex', alignItems: 'flex-start', gap: '4px', color: 'var(--status-unreported-text)', fontSize: '0.8rem', marginTop: '4px' }}>
+                              <AlertCircle size={12} style={{ marginTop: '2px', flexShrink: 0 }} /> 
+                              <span style={{ wordBreak: 'break-all' }}>
+                                {driver.errorDetail ? `※${driver.errorDetail.split('(リスト:')[0]}` : '※配達件数がまだ報告されていません'}
+                              </span>
                             </span>
                           )}
                         </div>
