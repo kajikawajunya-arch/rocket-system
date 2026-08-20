@@ -58,17 +58,19 @@ function App() {
           setFetchedData([]);
         }
 
+        // ▼ GAS側がタイムアウト等で空リストを返してきた時の防波堤
         if (json.mailList) {
-          setMailList(json.mailList);
-        } else {
-          setMailList({ a: [], b: [] });
+          if (json.mailList.a.length > 0 || json.mailList.b.length > 0) {
+            setMailList(json.mailList);
+          }
+          // 空だった場合は、前回持っていたデータをそのまま維持して画面から消えないようにする
         }
       } catch (error) {
         console.error("データの取得に失敗しました", error);
         // エラー時はアラートで知らせる
         alert("データの取得に失敗しました。URLや権限を確認してください。");
         setFetchedData([]);
-        setMailList({ a: [], b: [] });
+        // ここでも setMailList({a:[], b:[]}) にしないことで維持する
       } finally {
         setIsLoading(false);
       }
