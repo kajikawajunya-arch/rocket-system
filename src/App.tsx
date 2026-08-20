@@ -121,7 +121,7 @@ function App() {
       
       return {
         id: index.toString(),
-        date: targetDayStr, // 表示用に整形された日付を使用
+        date: targetDayStr, 
         koma: row['コマ数'] || '不明',
         codeName: row['コード名'] || '名称不明',
         isReported: hasReported,
@@ -176,7 +176,6 @@ function App() {
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
               onClick={(e) => {
-                // クリック時にカレンダーピッカーを強制的に開く
                 try {
                   (e.target as HTMLInputElement).showPicker();
                 } catch(err) {}
@@ -381,9 +380,10 @@ function App() {
             </h3>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, marginBottom: '2rem' }}>
               {mailList.a.map((name, i) => {
+                const normalizedMailName = normalizeName(name);
                 const isReported = processedData.some(d => 
                   (d.koma === 'A' || d.koma === 'AB') && 
-                  (d.codeName === name || d.reportDetails?.workerName === name)
+                  (normalizeName(d.codeName) === normalizedMailName || normalizeName(d.reportDetails?.workerName) === normalizedMailName)
                 );
                 return (
                   <li key={i} style={{ padding: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', color: isReported ? 'var(--text-secondary)' : 'var(--status-unreported-text)', textDecoration: isReported ? 'line-through' : 'none', display: 'flex', justifyContent: 'space-between' }}>
@@ -401,9 +401,10 @@ function App() {
             </h3>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               {mailList.b.map((name, i) => {
+                const normalizedMailName = normalizeName(name);
                 const isReported = processedData.some(d => 
                   (d.koma === 'B' || d.koma === 'AB') && 
-                  (d.codeName === name || d.reportDetails?.workerName === name)
+                  (normalizeName(d.codeName) === normalizedMailName || normalizeName(d.reportDetails?.workerName) === normalizedMailName)
                 );
                 return (
                   <li key={i} style={{ padding: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', color: isReported ? 'var(--text-secondary)' : 'var(--status-unreported-text)', textDecoration: isReported ? 'line-through' : 'none', display: 'flex', justifyContent: 'space-between' }}>
