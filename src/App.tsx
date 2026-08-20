@@ -22,6 +22,25 @@ const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwAMsW-5Jir6SkJ6Vyk
 type KomaFilter = 'ALL' | 'A' | 'B' | 'AB';
 
 function App() {
+  // 比較用の名前正規化関数（GASと同じ辞書）
+  const normalizeName = (name: string | undefined) => {
+    if (!name) return '';
+    let n = name.replace(/\s+/g, '');
+    n = n.replace(/﨑/g, '崎')
+         .replace(/髙/g, '高')
+         .replace(/邊/g, '辺')
+         .replace(/邉/g, '辺')
+         .replace(/齋/g, '斎')
+         .replace(/齊/g, '斎')
+         .replace(/澤/g, '沢')
+         .replace(/濱/g, '浜')
+         .replace(/凜/g, '凛');
+    if (n === 'ホセ') {
+      n = '東膳ホセ友哉';
+    }
+    return n;
+  };
+
   const [currentView, setCurrentView] = useState<'dashboard' | 'comparison'>('dashboard');
   const [komaFilter, setKomaFilter] = useState<KomaFilter>('ALL');
   const [showOnlyUnreported, setShowOnlyUnreported] = useState(false);
